@@ -6,7 +6,7 @@ import (
 	"reflect"
 	"unsafe"
 
-	. "github.com/ImVexed/Muon/ultralight"
+	. "github.com/ImVexed/muon/ultralight"
 )
 
 type Window struct {
