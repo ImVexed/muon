@@ -1,6 +1,6 @@
 import React from 'react';
-import logo from './logo.svg';
 import './App.css';
+import logo from './logo.svg';
 
 function App() {
   /*eslint-disable no-undef*/
@@ -9,8 +9,7 @@ function App() {
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
         <p>
-          ts
-          {/* {getOS()} */}
+          {window.add(1, 2)}
         </p>
         <a
           className="App-link"

@@ -1,5 +1,8 @@
-module test
+module muon
 
-go 1.12
+go 1.13
 
-require golang.org/x/net v0.0.0-20190926025831-c00fd9afed17
+require (
+	github.com/capnm/sysinfo v0.0.0-20130621111458-5909a53897f3
+	golang.org/x/net v0.0.0-20190926025831-c00fd9afed17
+)
