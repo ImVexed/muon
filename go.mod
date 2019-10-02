@@ -1,4 +1,4 @@
-module muon
+module github.com/ImVexed/Muon
 
 go 1.13
 
