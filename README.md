@@ -41,7 +41,7 @@ import (
 )
 
 func main() {
-    // Any static asset packer of your liking (ex. fileb0x)
+  // Any static asset packer of your liking (ex. fileb0x)
 	fileHandler := http.FileServer(webfiles.HTTP)
 
 	cfg := &muon.Config{
@@ -53,10 +53,10 @@ func main() {
 
 	m := muon.New(cfg, fileHandler)
 
-    // Expose our `add` function to the JS runtime
+  // Expose our `add` function to the JS runtime
 	m.Bind("add", add)
 
-    // Show the Window and start the Runtime
+  // Show the Window and start the Runtime
 	if err := m.Start(); err != nil {
 		panic(err)
 	}
