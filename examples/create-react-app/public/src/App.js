@@ -1,15 +1,14 @@
 import React from 'react';
-import './App.css';
 import logo from './logo.svg';
+import './App.css';
 
 function App() {
-  /*eslint-disable no-undef*/
   return (
     <div className="App">
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
         <p>
-          {window.add(1, 2)}
+          Go: add(1 + 2) = {window.add(1,2)}
         </p>
         <a
           className="App-link"
