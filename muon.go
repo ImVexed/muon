@@ -11,6 +11,7 @@ import (
 	. "github.com/ImVexed/muon/ultralight"
 )
 
+// Window represents a single Ultralight instance
 type Window struct {
 	wnd     ULWindow
 	view    ULView
@@ -25,6 +26,7 @@ type ipf struct {
 	ReturnTypes []reflect.Type
 }
 
+// Config contains configurable controls for the Ultralight engine
 type Config struct {
 	Title  string
 	Height uint32
@@ -34,6 +36,7 @@ type Config struct {
 	Y      int32
 }
 
+// New creates a Ultralight Window
 func New(cfg *Config, handler http.Handler) *Window {
 	w := &Window{
 		cfg:     cfg,
@@ -57,6 +60,7 @@ func New(cfg *Config, handler http.Handler) *Window {
 	return w
 }
 
+// Start sets up the Ultralight runtime and begins showing the Window
 func (w *Window) Start() error {
 
 	addr, err := serveHandler(w.handler)
