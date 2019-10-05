@@ -20,12 +20,13 @@
 - Hot-reloading
 - Superior disk size + memory & cpu usage
 
+Comparison with a "Hello, World!" React App
 
 |      | Muon    | Electron |
 |:----:|---------|----------|
 | CPU  | 0.0%    | 1.2%     |
 | MEM  | 26.0 MB | 201.7 MB |
-| SIZE | 42 MB   | 136 MB   |
+| DISK | 42 MB   | 136 MB   |
 
 # Example
 
