@@ -9,7 +9,7 @@
 
 ----
 
-`Muon` is a lightweight alternative to Electron written in Golang in about ~300 LoC, using Ultralight instead of Chromium. [Ultralight](https://ultralig.ht/) is a corss-platform WebKit rewrite using the GPU to target embeded desktop applications that resulted in a fast, lightweight, and low-memory HTML UI solution that blends the power of Chromium with the small footprint of Native UI.
+`Muon` is a lightweight alternative to Electron written in Golang in about ~300 LoC, using Ultralight instead of Chromium. [Ultralight](https://ultralig.ht/) is a cross-platform WebKit rewrite using the GPU to target embeded desktop applications that resulted in a fast, lightweight, and low-memory HTML UI solution that blends the power of Chromium with the small footprint of Native UI.
 
 
 # Features
