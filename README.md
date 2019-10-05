@@ -34,37 +34,37 @@ From `examples/create-react-app/main.go`:
 package main
 
 import (
-	"github.com/ImVexed/muon"
+  "github.com/ImVexed/muon"
 
-	"cra-go/webfiles"
-	"net/http"
+  "cra-go/webfiles"
+  "net/http"
 )
 
 func main() {
   // Any static asset packer of your liking (ex. fileb0x)
-	fileHandler := http.FileServer(webfiles.HTTP)
+  fileHandler := http.FileServer(webfiles.HTTP)
 
-	cfg := &muon.Config{
-		Title:  "Hello, World!",
-		Height: 500,
-		Width:  500,
-		Hint:   2 | 4,
-	}
+  cfg := &muon.Config{
+    Title:  "Hello, World!",
+    Height: 500,
+    Width:  500,
+    Hint:   2 | 4,
+  }
 
-	m := muon.New(cfg, fileHandler)
+  m := muon.New(cfg, fileHandler)
 
   // Expose our `add` function to the JS runtime
-	m.Bind("add", add)
+  m.Bind("add", add)
 
   // Show the Window and start the Runtime
-	if err := m.Start(); err != nil {
-		panic(err)
-	}
+  if err := m.Start(); err != nil {
+    panic(err)
+  }
 }
 
 // Muon automatically handles interop to and from the JS runtime
 func add(a float64, b float64) float64 {
-	return a + b
+  return a + b
 }
 ```
 
