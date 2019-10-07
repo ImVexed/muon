@@ -45,13 +45,13 @@ func main() {
   // Any static asset packer of your liking (ex. fileb0x)
   fileHandler := http.FileServer(webfiles.HTTP)
 
-	cfg := &muon.Config{
-		Title:      "Hello, World!",
-		Height:     500,
-		Width:      500,
-		Tilted:     true,
-		Resizeable: true,
-	}
+  cfg := &muon.Config{
+    Title:      "Hello, World!",
+    Height:     500,
+    Width:      500,
+    Tilted:     true,
+    Resizeable: true,
+  }
 
   m := muon.New(cfg, fileHandler)
 
