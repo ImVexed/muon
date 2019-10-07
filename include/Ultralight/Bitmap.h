@@ -24,17 +24,33 @@ namespace ultralight {
 /// The various Bitmap formats.
 ///
 enum UExport BitmapFormat {
-  /// Alpha-channel only, 8-bits per channel (8-bits in total per pixel)
-  kBitmapFormat_A8,
+  /**
+   * Alpha channel only, 8-bits per pixel.
+   *
+   * Encoding: 8-bits per channel, unsigned normalized.
+   *
+   * Color-space: Linear (no gamma), alpha-coverage only.
+   */
+  kBitmapFormat_A8_UNORM,
 
-  /// Red Green Blue Alpha, 8-bits per channel (32-bits in total per pixel)
-  kBitmapFormat_RGBA8
+  /**
+   * Blue Green Red Alpha channels, 32-bits per pixel.
+   *
+   * Encoding: 8-bits per channel, unsigned normalized.
+   *
+   * Color-space: sRGB gamma with premultiplied linear alpha channel.
+   *
+   * NOTE: Alpha is premultiplied with BGR channels _before_ sRGB gamma is
+   *       applied so we can use sRGB conversion hardware and perform all
+   *       blending in linear space on GPU.
+   */
+  kBitmapFormat_BGRA8_UNORM_SRGB,
 };
 
 ///
 /// Macro to get the bytes per pixel from a BitmapFormat
 ///
-#define GetBytesPerPixel(x) (x == kBitmapFormat_A8? 1 : 4)
+#define GetBytesPerPixel(x) (x == kBitmapFormat_A8_UNORM? 1 : 4)
 
 ///
 /// @brief  Bitmap container with basic blitting and conversion routines.
@@ -58,7 +74,8 @@ class UExport Bitmap : public RefCounted {
   ///
   /// @return  A ref-pointer to a new Bitmap instance.
   ///
-  static Ref<Bitmap> Create(uint32_t width, uint32_t height, BitmapFormat format);
+  static Ref<Bitmap> Create(uint32_t width, uint32_t height,
+                            BitmapFormat format);
 
   ///
   /// Create a Bitmap with existing pixels and configuration.
@@ -81,10 +98,20 @@ class UExport Bitmap : public RefCounted {
   ///                      raw pixels passed in as its own, but you are still
   ///                      responsible for destroying your buffer afterwards.
   ///
+  /// @param  fixup_gamma  Whether or not we should reinterpret the source
+  ///                      as an sRGB bitmap with premultiplied alpha applied
+  ///                      after the gamma function (typical of PNGs). We
+  ///                      expect all premultiplication to be applied before
+  ///                      the gamma function so we can blend properly in
+  ///                      linear space. Only valid for
+  ///                      kBitmapFormat_BGRA8_UNORM_SRGB.
+  ///
   /// @return  A ref-pointer to a new Bitmap instance.
   ///
-  static Ref<Bitmap> Create(uint32_t width, uint32_t height, BitmapFormat format,
-         uint32_t row_bytes, const void* pixels, size_t size, bool should_copy = true);
+  static Ref<Bitmap> Create(uint32_t width, uint32_t height,
+                            BitmapFormat format, uint32_t row_bytes,
+                            const void* pixels, size_t size,
+                            bool should_copy = true, bool fixup_gamma = false);
 
   ///
   /// Create a bitmap from a deep copy of another Bitmap.
@@ -185,7 +212,7 @@ class UExport Bitmap : public RefCounted {
   ///
   /// @note  Formats do not need to match. Bitmap formats will be converted
   ///        to one another automatically. Note that when converting from
-  ///        RGBA8 to A8, only the Red channel will be used.
+  ///        BGRA8 to A8, only the Blue channel will be used.
   ///
   /// @param  src_rect    The source rectangle, relative to src bitmap.
   ///
@@ -211,6 +238,24 @@ class UExport Bitmap : public RefCounted {
   /// @return  Whether or not the operation succeeded.
   ///
   virtual bool WritePNG(const char* path) = 0;
+
+
+  ///
+  /// Make a resized copy of this bitmap by writing to a pre-allocated
+  /// destination bitmap.
+  ///
+  /// @param  destination  The bitmap to store the result in, the width and
+  ///                      height of the destination will be used.
+  ///
+  /// @param  high_quality  Whether or not a high quality resampling will be
+  ///                       used during the resize. (Otherwise, just uses fast
+  ///                       nearest-neighbor sampling)
+  ///
+  /// @return  Whether or not the operation succeeded. This operation is only
+  ///          valid if both formats are kBitmapFormat_BGRA8_UNORM_SRGB and
+  ///          both the source and destination are non-empty.
+  ///
+  virtual bool Resample(Ref<Bitmap> destination, bool high_quality) = 0;
 
 protected:
   Bitmap();

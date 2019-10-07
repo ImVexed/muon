@@ -57,7 +57,7 @@ struct UExport Config {
   bool enable_images = true;
 
   ///
-  /// Whether or not JavaScript should be enabled
+  /// Whether or not JavaScript should be enabled.
   ///
   bool enable_javascript = true;
 
@@ -107,6 +107,36 @@ struct UExport Config {
   /// and platform input widgets.
   ///
   String16 user_stylesheet;
+
+  ///
+  /// Whether or not we should continuously repaint any Views or compositor
+  /// layers, regardless if they are dirty or not. This is mainly used to
+  /// diagnose painting/shader issues.
+  ///
+  bool force_repaint = false;
+
+  ///
+  /// When a CSS animation is active, the amount of time to wait before
+  /// triggering another repaint.
+  ///
+  double animation_timer_delay = 1.0 / 60.0;
+
+  ///
+  /// Size of WebCore's memory cache in bytes. 
+  ///
+  /// @note  You should increase this if you anticipate handling pages with
+  ///        large resources, Safari typically uses 128+ MiB for its cache.
+  ///
+  uint32_t memory_cache_size = 64 * 1024 * 1024;
+
+  ///
+  /// Number of pages to keep in the cache. Defaults to 0 (none).
+  ///
+  /// @note  Safari typically caches about 5 pages and maintains an on-disk
+  ///        cache to support typical web-browsing activities. If you increase
+  ///        this, you should probably increase the memory cache size as well.
+  ///
+  uint32_t page_cache_size = 0;
 };
 
 }  // namespace ultralight

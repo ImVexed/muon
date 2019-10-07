@@ -121,6 +121,8 @@ struct UExport GPUState {
   vec4 uniform_vector[8];
   uint8_t clip_size;
   Matrix4x4 clip[8];
+  bool enable_scissor;
+  Rect scissor_rect;
 };
 
 ///
@@ -222,7 +224,7 @@ public:
   virtual void BindRenderBuffer(uint32_t render_buffer_id) = 0;
 
   ///
-  /// Clear a render buffer (flush pixels)
+  /// Clear a render buffer (flush pixels to 0).
   ///
   virtual void ClearRenderBuffer(uint32_t render_buffer_id) = 0;
 

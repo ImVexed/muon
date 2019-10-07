@@ -15,6 +15,7 @@
 #include "Defines.h"
 #include <Ultralight/RefPtr.h>
 #include <Ultralight/Renderer.h>
+#include <Ultralight/platform/Config.h>
 
 namespace ultralight {
 
@@ -38,6 +39,36 @@ public:
 };
 
 ///
+/// App-specific settings.
+///
+struct AExport Settings {
+  ///
+  /// The root file path for our file system. You should set this to the
+  /// relative path where all of your app data is.
+  ///
+  /// This will be used to resolve all file URLs, eg file:///page.html
+  ///
+  /// @note  By default, on macOS we use the app bundle's @resource_path,
+  ///        on all other platforms we use the "./assets/" directory relative
+  ///        to the executable's directory.
+  ///
+#ifdef __APPLE__
+  String file_system_path = "@resource_path";
+#else
+  String file_system_path = "./assets/";
+#endif
+
+  ///
+  /// Whether or not we should load and compile shaders from the file system
+  /// (eg, from the /shaders/ path, relative to file_system_path).
+  ///
+  /// If this is false (the default), we will instead load pre-compiled shaders
+  /// from memory which speeds up application startup time.
+  ///
+  bool load_shaders_from_file_system = false;
+};
+
+///
 /// Main application class.
 ///
 class AExport App : public RefCounted {
@@ -45,17 +76,28 @@ public:
   ///
   /// Create the App singleton.
   ///
-  /// @note  You should only create one of these per application lifetime.
-  ///        
-  ///        App maintains its own Renderer instance, make sure to set your
-  ///        Config before creating App. (@see Platform::set_config)
+  /// @param  settings  Settings to customize App runtime behavior.
   ///
-  static Ref<App> Create();
+  /// @param  config  Config options for the Ultralight renderer.
+  ///
+  /// @return  Returns a ref-pointer to the created App instance.
+  ///
+  /// @note  You should only create one of these per application lifetime.
+  ///
+  /// @note  Certain Config options may be overridden during App creation,
+  ///        most commonly Config::face_winding and Config::device_scale_hint.
+  ///
+  static Ref<App> Create(Settings settings = Settings(), Config config = Config());
 
   ///
   /// Get the App singleton.
   ///
   static App* instance();
+
+  ///
+  /// Get the settings this App was created with.
+  ///
+  virtual const Settings& settings() const = 0;
 
   ///
   /// Set the main window. You must set this before calling Run.

@@ -44,7 +44,8 @@ func New(cfg *Config, handler http.Handler) *Window {
 	}
 
 	ufg := UlCreateConfig()
-	w.app = UlCreateApp(ufg)
+	std := UlCreateSettings()
+	w.app = UlCreateApp(std, ufg)
 	mm := UlAppGetMainMonitor(w.app)
 	w.wnd = UlCreateWindow(mm, w.cfg.Height, w.cfg.Width, false, w.cfg.Hint)
 

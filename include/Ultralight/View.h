@@ -224,6 +224,17 @@ public:
   ///
   virtual bool needs_paint() const = 0;
 
+  ///
+  /// Get the inspector for this View, this is useful for debugging and
+  /// inspecting pages locally. This will only succeed if you have the
+  /// inspector assets in your filesystem-- the inspector will look for
+  /// file:///inspector/Main.html when it first loads.
+  ///
+  /// @note  The inspector View is owned by the View and lazily-created on
+  ///        first call. The initial dimensions are 10x10, you should call
+  ///        View::Resize() on the returned View to resize it to your desired
+  ///        dimensions.
+  ///
   virtual RefPtr<View> inspector() = 0;
 
 protected:

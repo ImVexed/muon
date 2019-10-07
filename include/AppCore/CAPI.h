@@ -18,18 +18,19 @@
 
 #if defined(__WIN32__) || defined(_WIN32)
 #  if defined(APPCORE_IMPLEMENTATION)
-#    define AExport __declspec(dllexport)
+#    define ACExport __declspec(dllexport)
 #  else
-#    define AExport __declspec(dllimport)
+#    define ACExport __declspec(dllimport)
 #  endif
 #else
-#  define AExport __attribute__((visibility("default")))
+#  define ACExport __attribute__((visibility("default")))
 #endif
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
+typedef struct C_Settings* ULSettings;
 typedef struct C_App* ULApp;
 typedef struct C_Window* ULWindow;
 typedef struct C_Monitor* ULMonitor;
@@ -46,36 +47,72 @@ typedef enum {
 } ULWindowFlags;
 
 ///
+/// Create settings with default values (see <AppCore/App.h>).
+///
+ACExport ULSettings ulCreateSettings();
+
+///
+/// Destroy settings.
+///
+ACExport void ulDestroySettings(ULSettings settings);
+
+///
+/// Set the root file path for our file system, you should set this to the
+/// relative path where all of your app data is.
+///
+/// This will be used to resolve all file URLs, eg file:///page.html
+///
+/// @note  By default, on macOS we use the app bundle's @resource_path,
+///        on all other platforms we use the "./assets/" directory relative
+///        to the executable's directory.
+///
+ACExport void ulSettingsSetFileSystemPath(ULSettings settings, ULString path);
+
+///
+/// Set whether or not we should load and compile shaders from the file system
+/// (eg, from the /shaders/ path, relative to file_system_path).
+///
+/// If this is false (the default), we will instead load pre-compiled shaders
+/// from memory which speeds up application startup time.
+///
+ACExport void ulSettingsSetLoadShadersFromFileSystem(ULSettings settings,
+                                                     bool enabled);
+
+///
 /// Create the App singleton.
 ///
-/// @param  config  Configuration settings to use.
+/// @param  settings  Settings to customize App runtime behavior. You can pass
+///                   NULL for this parameter to use default settings.
+///
+/// @param  config  Config options for the Ultralight renderer. You can pass
+///                 NULL for this parameter to use default config.
 ///
 /// @note  You should only create one of these per application lifetime.
 ///        
-///        App maintains its own Renderer instance, make sure to set your
-///        Config before creating App. (@see Platform::set_config)
+/// @note  Certain Config options may be overridden during App creation,
+///        most commonly Config::face_winding and Config::device_scale_hint.
 ///
-AExport ULApp ulCreateApp(ULConfig config);
+ACExport ULApp ulCreateApp(ULSettings settings, ULConfig config);
 
 ///
 /// Destroy the App instance.
 ///
-AExport void ulDestroyApp(ULApp app);
+ACExport void ulDestroyApp(ULApp app);
 
 ///
-/// Set the main window. You must set this before calling ulAppRun.
+/// Set the main window, you must set this before calling ulAppRun.
 ///
 /// @param  window  The window to use for all rendering.
 ///
 /// @note  We currently only support one Window per App, this will change
 ///        later once we add support for multiple driver instances.
 ///
-AExport void ulAppSetWindow(ULApp app, ULWindow window);
+ACExport void ulAppSetWindow(ULApp app, ULWindow window);
 
 ///
 /// Get the main window.
 ///
-AExport ULWindow ulAppGetWindow(ULApp app);
+ACExport ULWindow ulAppGetWindow(ULApp app);
 
 typedef void
 (*ULUpdateCallback) (void* user_data);
@@ -87,52 +124,50 @@ typedef void
 /// @note  This event is fired right before the run loop calls
 ///        Renderer::Update and Renderer::Render.
 ///
-AExport void ulAppSetUpdateCallback(ULApp app, ULUpdateCallback callback,
-                                    void* user_data);
+ACExport void ulAppSetUpdateCallback(ULApp app, ULUpdateCallback callback,
+                                     void* user_data);
 
 ///
 /// Whether or not the App is running.
 ///
-AExport bool ulAppIsRunning(ULApp app);
+ACExport bool ulAppIsRunning(ULApp app);
 
 ///
 /// Get the main monitor (this is never NULL).
 ///
 /// @note  We'll add monitor enumeration later.
 ///
-AExport ULMonitor ulAppGetMainMonitor(ULApp app);
+ACExport ULMonitor ulAppGetMainMonitor(ULApp app);
 
 ///
 /// Get the underlying Renderer instance.
 ///
-AExport ULRenderer ulAppGetRenderer(ULApp app);
+ACExport ULRenderer ulAppGetRenderer(ULApp app);
 
 ///
-/// Run the main loop.
+/// Run the main loop, make sure to call ulAppSetWindow before calling this.
 ///
-/// @note  Make sure to call ulAppSetWindow before calling this.
-///
-AExport void ulAppRun(ULApp app);
+ACExport void ulAppRun(ULApp app);
 
 ///
 /// Quit the application.
 ///
-AExport void ulAppQuit(ULApp app);
+ACExport void ulAppQuit(ULApp app);
 
 ///
 /// Get the monitor's DPI scale (1.0 = 100%).
 ///
-AExport double ulMonitorGetScale(ULMonitor monitor);
+ACExport double ulMonitorGetScale(ULMonitor monitor);
 
 ///
-/// Get the width of the monitor (in device coordinates)
+/// Get the width of the monitor (in device coordinates).
 ///
-AExport unsigned int ulMonitorGetWidth(ULMonitor monitor);
+ACExport unsigned int ulMonitorGetWidth(ULMonitor monitor);
 
 ///
-/// Get the height of the monitor (in device coordinates)
+/// Get the height of the monitor (in device coordinates).
 ///
-AExport unsigned int ulMonitorGetHeight(ULMonitor monitor);
+ACExport unsigned int ulMonitorGetHeight(ULMonitor monitor);
 
 ///
 /// Create a new Window.
@@ -147,14 +182,14 @@ AExport unsigned int ulMonitorGetHeight(ULMonitor monitor);
 ///
 /// @param  window_flags  Various window flags.
 ///
-AExport ULWindow ulCreateWindow(ULMonitor monitor, unsigned int width,
-	                              unsigned int height, bool fullscreen,
-                                unsigned int window_flags);
+ACExport ULWindow ulCreateWindow(ULMonitor monitor, unsigned int width,
+	                               unsigned int height, bool fullscreen,
+                                 unsigned int window_flags);
 
 ///
 /// Destroy a Window.
 ///
-AExport void ulDestroyWindow(ULWindow window);
+ACExport void ulDestroyWindow(ULWindow window);
 
 typedef void
 (*ULCloseCallback) (void* user_data);
@@ -162,9 +197,9 @@ typedef void
 ///
 /// Set a callback to be notified when a window closes.
 ///
-AExport void ulWindowSetCloseCallback(ULWindow window,
-                                      ULCloseCallback callback,
-                                      void* user_data);
+ACExport void ulWindowSetCloseCallback(ULWindow window,
+                                       ULCloseCallback callback,
+                                       void* user_data);
 
 typedef void
 (*ULResizeCallback) (void* user_data, unsigned int width, unsigned int height);
@@ -173,54 +208,54 @@ typedef void
 /// Set a callback to be notified when a window resizes
 /// (parameters are passed back in device coordinates).
 ///
-AExport void ulWindowSetResizeCallback(ULWindow window,
-                                       ULResizeCallback callback,
-                                       void* user_data);
+ACExport void ulWindowSetResizeCallback(ULWindow window,
+                                        ULResizeCallback callback,
+                                        void* user_data);
 
 ///
 /// Get window width (in device coordinates).
 ///
-AExport unsigned int ulWindowGetWidth(ULWindow window);
+ACExport unsigned int ulWindowGetWidth(ULWindow window);
 
 ///
 /// Get window height (in device coordinates).
 ///
-AExport unsigned int ulWindowGetHeight(ULWindow window);
+ACExport unsigned int ulWindowGetHeight(ULWindow window);
 
 ///
 /// Get whether or not a window is fullscreen.
 ///
-AExport bool ulWindowIsFullscreen(ULWindow window);
+ACExport bool ulWindowIsFullscreen(ULWindow window);
 
 ///
 /// Get the DPI scale of a window.
 ///
-AExport double ulWindowGetScale(ULWindow window);
+ACExport double ulWindowGetScale(ULWindow window);
 
 ///
 /// Set the window title.
 ///
-AExport void ulWindowSetTitle(ULWindow window, const char* title);
+ACExport void ulWindowSetTitle(ULWindow window, const char* title);
 
 ///
 /// Set the cursor for a window.
 ///
-AExport void ulWindowSetCursor(ULWindow window, ULCursor cursor);
+ACExport void ulWindowSetCursor(ULWindow window, ULCursor cursor);
 
 ///
 /// Close a window.
 ///
-AExport void ulWindowClose(ULWindow window);
+ACExport void ulWindowClose(ULWindow window);
 
 ///
 /// Convert device coordinates to pixels using the current DPI scale.
 ///
-AExport int ulWindowDeviceToPixel(ULWindow window, int val);
+ACExport int ulWindowDeviceToPixel(ULWindow window, int val);
 
 ///
 /// Convert pixels to device coordinates using the current DPI scale.
 ///
-AExport int ulWindowPixelsToDevice(ULWindow window, int val);
+ACExport int ulWindowPixelsToDevice(ULWindow window, int val);
 
 ///
 /// Create a new Overlay.
@@ -241,82 +276,82 @@ AExport int ulWindowPixelsToDevice(ULWindow window, int val);
 /// @note  Each Overlay is essentially a View and an on-screen quad. You should
 ///        create the Overlay then load content into the underlying View.
 ///
-AExport ULOverlay ulCreateOverlay(ULWindow window, unsigned int width,
-                                  unsigned int height, int x, int y);
+ACExport ULOverlay ulCreateOverlay(ULWindow window, unsigned int width,
+                                   unsigned int height, int x, int y);
 
 ///
 /// Destroy an overlay.
 ///
-AExport void ulDestroyOverlay(ULOverlay overlay);
+ACExport void ulDestroyOverlay(ULOverlay overlay);
 
 ///
 /// Get the underlying View.
 ///
-AExport ULView ulOverlayGetView(ULOverlay overlay);
+ACExport ULView ulOverlayGetView(ULOverlay overlay);
 
 ///
 /// Get the width (in device coordinates).
 ///
-AExport unsigned int ulOverlayGetWidth(ULOverlay overlay);
+ACExport unsigned int ulOverlayGetWidth(ULOverlay overlay);
 
 ///
 /// Get the height (in device coordinates).
 ///
-AExport unsigned int ulOverlayGetHeight(ULOverlay overlay);
+ACExport unsigned int ulOverlayGetHeight(ULOverlay overlay);
 
 ///
 /// Get the x-position (offset from the left of the Window), in device
 /// coordinates.
 ///
-AExport int ulOverlayGetX(ULOverlay overlay);
+ACExport int ulOverlayGetX(ULOverlay overlay);
 
 ///
 /// Get the y-position (offset from the top of the Window), in device
 /// coordinates.
 ///
-AExport int ulOverlayGetY(ULOverlay overlay);
+ACExport int ulOverlayGetY(ULOverlay overlay);
 
 ///
 /// Move the overlay to a new position (in device coordinates).
 ///
-AExport void ulOverlayMoveTo(ULOverlay overlay, int x, int y);
+ACExport void ulOverlayMoveTo(ULOverlay overlay, int x, int y);
 
 ///
 /// Resize the overlay (and underlying View), dimensions should be
 /// specified in device coordinates.
 ///
-AExport void ulOverlayResize(ULOverlay overlay, unsigned int width,
-                             unsigned int height);
+ACExport void ulOverlayResize(ULOverlay overlay, unsigned int width,
+                              unsigned int height);
 
 ///
 /// Whether or not the overlay is hidden (not drawn).
 ///
-AExport bool ulOverlayIsHidden(ULOverlay overlay);
+ACExport bool ulOverlayIsHidden(ULOverlay overlay);
 
 ///
-/// Hide the overlay (will no longer be drawn)
+/// Hide the overlay (will no longer be drawn).
 ///
-AExport void ulOverlayHide(ULOverlay overlay);
+ACExport void ulOverlayHide(ULOverlay overlay);
 
 ///
 /// Show the overlay.
 ///
-AExport void ulOverlayShow(ULOverlay overlay);
+ACExport void ulOverlayShow(ULOverlay overlay);
 
 ///
 /// Whether or not an overlay has keyboard focus.
 ///
-AExport bool ulOverlayHasFocus(ULOverlay overlay);
+ACExport bool ulOverlayHasFocus(ULOverlay overlay);
 
 ///
 /// Grant this overlay exclusive keyboard focus.
 ///
-AExport void ulOverlayFocus(ULOverlay overlay);
+ACExport void ulOverlayFocus(ULOverlay overlay);
 
 ///
 /// Remove keyboard focus.
 ///
-AExport void ulOverlayUnfocus(ULOverlay overlay);
+ACExport void ulOverlayUnfocus(ULOverlay overlay);
 
 #ifdef __cplusplus
 }

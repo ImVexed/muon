@@ -179,61 +179,85 @@ ULExport ULConfig ulCreateConfig();
 ULExport void ulDestroyConfig(ULConfig config);
 
 ///
-/// Set whether images should be enabled (Default = True)
+/// Set whether images should be enabled (Default = True).
 ///
 ULExport void ulConfigSetEnableImages(ULConfig config, bool enabled);
 
 ///
-/// Set whether JavaScript should be eanbled (Default = True)
+/// Set whether JavaScript should be eanbled (Default = True).
 ///
 ULExport void ulConfigSetEnableJavaScript(ULConfig config, bool enabled);
 
 ///
 /// Set whether we should use BGRA byte order (instead of RGBA) for View
-/// bitmaps. (Default = False)
+/// bitmaps (Default = False).
 ///
 ULExport void ulConfigSetUseBGRAForOffscreenRendering(ULConfig config,
                                                       bool enabled);
 
 ///
 /// Set the amount that the application DPI has been scaled, used for
-/// scaling device coordinates to pixels and oversampling raster shapes.
-/// (Default = 1.0)
+/// scaling device coordinates to pixels and oversampling raster shapes
+/// (Default = 1.0).
 ///
 ULExport void ulConfigSetDeviceScaleHint(ULConfig config, double value);
 
 ///
-/// Set default font-family to use (Default = Times New Roman)
+/// Set default font-family to use (Default = Times New Roman).
 ///
 ULExport void ulConfigSetFontFamilyStandard(ULConfig config,
                                             ULString font_name);
 
 ///
-/// Set default font-family to use for fixed fonts, eg <pre> and <code>.
-/// (Default = Courier New)
+/// Set default font-family to use for fixed fonts, eg <pre> and <code>
+/// (Default = Courier New).
 ///
 ULExport void ulConfigSetFontFamilyFixed(ULConfig config, ULString font_name);
 
 ///
-/// Set default font-family to use for serif fonts. (Default = Times New Roman)
+/// Set default font-family to use for serif fonts (Default = Times New Roman).
 ///
 ULExport void ulConfigSetFontFamilySerif(ULConfig config, ULString font_name);
 
 ///
-/// Set default font-family to use for sans-serif fonts. (Default = Arial)
+/// Set default font-family to use for sans-serif fonts (Default = Arial).
 ///
 ULExport void ulConfigSetFontFamilySansSerif(ULConfig config,
                                              ULString font_name);
 
 ///
-/// Set user agent string. (See <Ultralight/platform/Config.h> for the default)
+/// Set user agent string (See <Ultralight/platform/Config.h> for the default).
 ///
 ULExport void ulConfigSetUserAgent(ULConfig config, ULString agent_string);
 
 ///
-/// Set user stylesheet (CSS). (Default = Empty)
+/// Set user stylesheet (CSS) (Default = Empty).
 ///
 ULExport void ulConfigSetUserStylesheet(ULConfig config, ULString css_string);
+
+///
+/// Set whether or not we should continuously repaint any Views or compositor
+/// layers, regardless if they are dirty or not. This is mainly used to
+/// diagnose painting/shader issues. (Default = False)
+///
+ULExport void ulConfigSetForceRepaint(ULConfig config, bool enabled);
+
+///
+/// Set the amount of time to wait before triggering another repaint when a
+/// CSS animation is active. (Default = 1.0 / 60.0)
+///
+ULExport void ulConfigSetAnimationTimerDelay(ULConfig config, double delay);
+
+///
+/// Set the size of WebCore's memory cache for decoded images, scripts, and
+/// other assets in bytes. (Default = 64 * 1024 * 1024)
+///
+ULExport void ulConfigSetMemoryCacheSize(ULConfig config, unsigned int size);
+
+///
+/// Set the number of pages to keep in the cache. (Default = 0)
+///
+ULExport void ulConfigSetPageCacheSize(ULConfig config, unsigned int size);
 
 /******************************************************************************
  * Renderer
@@ -250,7 +274,7 @@ ULExport ULRenderer ulCreateRenderer(ULConfig config);
 ULExport void ulDestroyRenderer(ULRenderer renderer);
 
 ///
-/// Update timers and dispatch internal callbacks (JavaScript and network)
+/// Update timers and dispatch internal callbacks (JavaScript and network).
 ///
 ULExport void ulUpdate(ULRenderer renderer);
 
@@ -294,7 +318,7 @@ ULExport ULString ulViewGetTitle(ULView view);
 ULExport bool ulViewIsLoading(ULView view);
 
 ///
-/// Check if bitmap is dirty (has changed since last call to ulViewGetBitmap)
+/// Check if bitmap is dirty (has changed since last call to ulViewGetBitmap).
 ///
 ULExport bool ulViewIsBitmapDirty(ULView view);
 
@@ -306,78 +330,78 @@ ULExport bool ulViewIsBitmapDirty(ULView view);
 ULExport ULBitmap ulViewGetBitmap(ULView view);
 
 ///
-/// Load a raw string of html
+/// Load a raw string of HTML.
 ///
 ULExport void ulViewLoadHTML(ULView view, ULString html_string);
 
 ///
-/// Load a URL into main frame
+/// Load a URL into main frame.
 ///
 ULExport void ulViewLoadURL(ULView view, ULString url_string);
 
 ///
-/// Resize view to a certain width and height (in device coordinates)
+/// Resize view to a certain width and height (in device coordinates).
 ///
 ULExport void ulViewResize(ULView view, unsigned int width,
                            unsigned int height);
 
 ///
-/// Get the page's JSContext for use with JavaScriptCore API
+/// Get the page's JSContext for use with JavaScriptCore API.
 ///
 ULExport JSContextRef ulViewGetJSContext(ULView view);
 
 ///
-/// Evaluate a raw string of JavaScript and return result
+/// Evaluate a raw string of JavaScript and return result.
 ///
 ULExport JSValueRef ulViewEvaluateScript(ULView view, ULString js_string);
 
 ///
-/// Check if can navigate backwards in history
+/// Check if can navigate backwards in history.
 ///
 ULExport bool ulViewCanGoBack(ULView view);
 
 ///
-/// Check if can navigate forwards in history
+/// Check if can navigate forwards in history.
 ///
 ULExport bool ulViewCanGoForward(ULView view);
 
 ///
-/// Navigate backwards in history
+/// Navigate backwards in history.
 ///
 ULExport void ulViewGoBack(ULView view);
 
 ///
-/// Navigate forwards in history
+/// Navigate forwards in history.
 ///
 ULExport void ulViewGoForward(ULView view);
 
 ///
-/// Navigate to arbitrary offset in history
+/// Navigate to arbitrary offset in history.
 ///
 ULExport void ulViewGoToHistoryOffset(ULView view, int offset);
 
 ///
-/// Reload current page
+/// Reload current page.
 ///
 ULExport void ulViewReload(ULView view);
 
 ///
-/// Stop all page loads
+/// Stop all page loads.
 ///
 ULExport void ulViewStop(ULView view);
 
 ///
-/// Fire a keyboard event
+/// Fire a keyboard event.
 ///
 ULExport void ulViewFireKeyEvent(ULView view, ULKeyEvent key_event);
 
 ///
-/// Fire a mouse event
+/// Fire a mouse event.
 ///
 ULExport void ulViewFireMouseEvent(ULView view, ULMouseEvent mouse_event);
 
 ///
-/// Fire a scroll event
+/// Fire a scroll event.
 ///
 ULExport void ulViewFireScrollEvent(ULView view, ULScrollEvent scroll_event);
 
@@ -385,7 +409,7 @@ typedef void
 (*ULChangeTitleCallback) (void* user_data, ULView caller, ULString title);
 
 ///
-/// Set callback for when the page title changes
+/// Set callback for when the page title changes.
 ///
 ULExport void ulViewSetChangeTitleCallback(ULView view,
                                            ULChangeTitleCallback callback,
@@ -395,7 +419,7 @@ typedef void
 (*ULChangeURLCallback) (void* user_data, ULView caller, ULString url);
 
 ///
-/// Set callback for when the page URL changes
+/// Set callback for when the page URL changes.
 ///
 ULExport void ulViewSetChangeURLCallback(ULView view,
                                          ULChangeURLCallback callback,
@@ -405,7 +429,7 @@ typedef void
 (*ULChangeTooltipCallback) (void* user_data, ULView caller, ULString tooltip);
 
 ///
-/// Set callback for when the tooltip changes (usually result of a mouse hover)
+/// Set callback for when the tooltip changes (usually result of a mouse hover).
 ///
 ULExport void ulViewSetChangeTooltipCallback(ULView view,
                                              ULChangeTooltipCallback callback,
@@ -415,7 +439,7 @@ typedef void
 (*ULChangeCursorCallback) (void* user_data, ULView caller, ULCursor cursor);
 
 ///
-/// Set callback for when the mouse cursor changes
+/// Set callback for when the mouse cursor changes.
 ///
 ULExport void ulViewSetChangeCursorCallback(ULView view,
                                             ULChangeCursorCallback callback,
@@ -430,7 +454,7 @@ typedef void
 
 ///
 /// Set callback for when a message is added to the console (useful for
-/// JavaScript / network errors and debugging)
+/// JavaScript / network errors and debugging).
 ///
 ULExport void ulViewSetAddConsoleMessageCallback(ULView view,
                                           ULAddConsoleMessageCallback callback,
@@ -440,7 +464,7 @@ typedef void
 (*ULBeginLoadingCallback) (void* user_data, ULView caller);
 
 ///
-/// Set callback for when the page begins loading new URL into main frame
+/// Set callback for when the page begins loading new URL into main frame.
 ///
 ULExport void ulViewSetBeginLoadingCallback(ULView view,
                                             ULBeginLoadingCallback callback,
@@ -450,7 +474,7 @@ typedef void
 (*ULFinishLoadingCallback) (void* user_data, ULView caller);
 
 ///
-/// Set callback for when the page finishes loading URL into main frame
+/// Set callback for when the page finishes loading URL into main frame.
 ///
 ULExport void ulViewSetFinishLoadingCallback(ULView view,
                                              ULFinishLoadingCallback callback,
@@ -460,7 +484,7 @@ typedef void
 (*ULUpdateHistoryCallback) (void* user_data, ULView caller);
 
 ///
-/// Set callback for when the history (back/forward state) is modified
+/// Set callback for when the history (back/forward state) is modified.
 ///
 ULExport void ulViewSetUpdateHistoryCallback(ULView view,
                                              ULUpdateHistoryCallback callback,
@@ -491,22 +515,37 @@ ULExport void ulViewSetNeedsPaint(ULView view, bool needs_paint);
 ///
 ULExport bool ulViewGetNeedsPaint(ULView view);
 
+///
+/// Create an inspector for this View, this is useful for debugging and
+/// inspecting pages locally. This will only succeed if you have the
+/// inspector assets in your filesystem-- the inspector will look for
+/// file:///inspector/Main.html when it loads.
+///
+/// @note  The initial dimensions of the returned View are 10x10, you should
+///        call ulViewResize on the returned View to resize it to your desired
+///        dimensions.
+///
+/// @note  You will need to call ulDestroyView on the returned instance
+///        when you're done using it.
+///
+ULExport ULView ulViewCreateInspectorView(ULView view);
+
 /******************************************************************************
  * String
  *****************************************************************************/
 
 ///
-/// Create string from null-terminated ASCII C-string
+/// Create string from null-terminated ASCII C-string.
 ///
 ULExport ULString ulCreateString(const char* str);
 
 ///
-/// Create string from UTF-8 buffer
+/// Create string from UTF-8 buffer.
 ///
 ULExport ULString ulCreateStringUTF8(const char* str, size_t len);
 
 ///
-/// Create string from UTF-16 buffer
+/// Create string from UTF-16 buffer.
 ///
 ULExport ULString ulCreateStringUTF16(ULChar16* str, size_t len);
 
@@ -521,7 +560,7 @@ ULExport void ulDestroyString(ULString str);
 ULExport ULChar16* ulStringGetData(ULString str);
 
 ///
-/// Get length in UTF-16 characters
+/// Get length in UTF-16 characters.
 ///
 ULExport size_t ulStringGetLength(ULString str);
 
