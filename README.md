@@ -78,7 +78,7 @@ func add(a float64, b float64) float64 {
 - JS: `Object`  Go: `struct` via JSON
 
 ## Q: *I get `exit status 3221225781` when I try to run my program*
-- Your program likely can't find the [Ultralight](https://ultralig.ht/) libraries. Ensure they're either installed on the system, or, in the same folder as your program.
+- Your program likely can't find the Ultralight libraries. Ensure they're either installed on the system, or, in the same folder as your program. Currently, Muon uses the 1.1 Ultralight pre-release that hasn't yet propogated to their main site and can only be downloaded from the [Ultralight](https://github.com/ultralight-ux/Ultralight#getting-the-latest-sdk) github repo.
 
 ## Q: *How do I get rid of the Console window on Windows?*
 - Add `-ldflags -H=windowsgui` to either your `go build` or `go run` to get rid of the window.
