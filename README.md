@@ -4,7 +4,7 @@
 <a title="Go Report Card" target="_blank" href="https://goreportcard.com/report/github.com/ImVexed/muon"><img src="https://goreportcard.com/badge/github.com/ImVexed/muon?style=flat-square"></a>
 <img alt="GitHub code size in bytes" src="https://img.shields.io/github/languages/code-size/ImVexed/muon">
 <br/>
-<a title="Doc for gnet" target="_blank" href="https://gowalker.org/github.com/ImVexed/muon"><img src="https://img.shields.io/badge/api-reference-blue.svg?style=flat-square"></a>
+<a target="_blank" href="https://gowalker.org/github.com/ImVexed/muon"><img src="https://img.shields.io/badge/api-reference-blue.svg?style=flat-square"></a>
 </p>
 
 ----
