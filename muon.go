@@ -180,12 +180,20 @@ func (w *Window) makeIPCCallback(f *ipf) func(JSContextRef, JSObjectRef, JSObjec
 			panic("Javascript does not support more than 1 return value!")
 		}
 
+		if len(val) == 0 {
+			return JSValueMakeNull(ctx)
+		}
+
 		return toJSValue(ctx, val[0])
 
 	}
 }
 
 func fromJSValue(ctx JSContextRef, value JSValueRef, rtype reflect.Type) (reflect.Value, error) {
+	if rtype == nil {
+		rtype = reflect.TypeOf(struct{}{})
+	}
+
 	var rv reflect.Value
 	var err error
 
@@ -205,7 +213,7 @@ func fromJSValue(ctx JSContextRef, value JSValueRef, rtype reflect.Type) (reflec
 			val, err := fromJSValue(ctx, ref, rtype.Elem())
 
 			if err != nil {
-				return reflect.Value{}, err
+				return reflect.Zero(rtype), err
 			}
 
 			values.Index(i).Set(val)
@@ -232,8 +240,8 @@ func fromJSValue(ctx JSContextRef, value JSValueRef, rtype reflect.Type) (reflec
 		}
 
 		JSStringRelease(ref)
-	default:
-		panic("Not implemented")
+	case KJSTypeUndefined, KJSTypeNull:
+		rv = reflect.Zero(rtype)
 	}
 
 	return rv, err
