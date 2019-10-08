@@ -14,6 +14,7 @@ import (
 // Window represents a single Ultralight instance
 type Window struct {
 	wnd     ULWindow
+	ov      ULOverlay
 	view    ULView
 	app     ULApp
 	handler http.Handler
@@ -31,9 +32,13 @@ type Config struct {
 	Title  string
 	Height uint32
 	Width  uint32
-	Hint   uint32
 	X      int32
 	Y      int32
+
+	Resizeable  bool
+	Borderless  bool
+	Tilted      bool
+	Maximizable bool
 }
 
 // New creates a Ultralight Window
@@ -47,16 +52,35 @@ func New(cfg *Config, handler http.Handler) *Window {
 	std := UlCreateSettings()
 	w.app = UlCreateApp(std, ufg)
 	mm := UlAppGetMainMonitor(w.app)
-	w.wnd = UlCreateWindow(mm, w.cfg.Height, w.cfg.Width, false, w.cfg.Hint)
+
+	var hint uint32
+
+	if cfg.Resizeable {
+		hint |= 4
+	}
+
+	if cfg.Borderless {
+		hint |= 1
+	}
+
+	if cfg.Tilted {
+		hint |= 2
+	}
+
+	if cfg.Maximizable {
+		hint |= 8
+	}
+
+	w.wnd = UlCreateWindow(mm, w.cfg.Height, w.cfg.Width, false, hint)
 
 	UlWindowSetTitle(w.wnd, w.cfg.Title)
 	UlAppSetWindow(w.app, w.wnd)
 
-	ov := UlCreateOverlay(w.wnd, w.cfg.Height, w.cfg.Width, w.cfg.X, w.cfg.Y)
+	w.ov = UlCreateOverlay(w.wnd, w.cfg.Height, w.cfg.Width, w.cfg.X, w.cfg.Y)
 
-	UlWindowSetResizeCallback(w.wnd, resizeCallback, unsafe.Pointer(&ov))
+	UlWindowSetResizeCallback(w.wnd, resizeCallback(w.ov), unsafe.Pointer(&w.ov))
 
-	w.view = UlOverlayGetView(ov)
+	w.view = UlOverlayGetView(w.ov)
 
 	return w
 }
@@ -117,6 +141,16 @@ func (w *Window) Eval(js string, ret reflect.Type) (interface{}, error) {
 	}
 
 	return val.Interface(), nil
+}
+
+// Resize changes the given Window's size
+func (w *Window) Resize(width int, height int) {
+	UlOverlayResize(w.ov, uint32(width), uint32(height))
+}
+
+// Move sets the Window's position to the given coordinates
+func (w *Window) Move(x int, y int) {
+	UlOverlayMoveTo(w.ov, int32(x), int32(y))
 }
 
 func (w *Window) makeIPCCallback(f *ipf) func(JSContextRef, JSObjectRef, JSObjectRef, uint, []JSValueRef, []JSValueRef) JSValueRef {
@@ -267,9 +301,10 @@ func addFunctionToView(view ULView, name string, callback JSObjectCallAsFunction
 	JSObjectSetProperty(ctx, gobj, fn, val, KJSPropertyAttributeNone, []JSValueRef{})
 }
 
-func resizeCallback(userData unsafe.Pointer, width uint32, height uint32) {
-	overlay := *(*ULOverlay)(userData)
-	UlOverlayResize(overlay, width, height)
+func resizeCallback(ov ULOverlay) func(userData unsafe.Pointer, width uint32, height uint32) {
+	return func(userData unsafe.Pointer, width uint32, height uint32) {
+		UlOverlayResize(ov, width, height)
+	}
 }
 
 func serveHandler(handler http.Handler) (string, error) {

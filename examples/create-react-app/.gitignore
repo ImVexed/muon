@@ -1,4 +1,5 @@
 go.sum
-webfiles/ab0x.go
+webfiles/
 .vscode/
-cra-go
+cra-go*
+*.dll
