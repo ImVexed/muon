@@ -95,3 +95,31 @@ func TestArrayType(t *testing.T) {
 		t.Errorf("nums[2] was not 3, got %f", nums[2])
 	}
 }
+
+func TestEmptyType(t *testing.T) {
+	cfg := &Config{
+		Height: 1,
+		Width:  1,
+	}
+
+	m := New(cfg, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {}))
+
+	m.Bind("test", func(nullValue string, undefinedValue string) {
+		if nullValue != "" {
+			t.Errorf("nullType was not empty!")
+		}
+		if undefinedValue != "" {
+			t.Errorf("undefinedType was not empty!")
+		}
+	})
+
+	go func() {
+		m.Start()
+	}()
+
+	_, err := m.Eval(`test(null, undefined)`, nil)
+
+	if err != nil {
+		t.Error(err)
+	}
+}
