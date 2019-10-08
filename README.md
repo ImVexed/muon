@@ -87,6 +87,9 @@ func add(a float64, b float64) float64 {
 ## Q: *How do I setup Ultralight?*
 - See our [getting started guide](https://github.com/ImVexed/muon/blob/master/getting-started.md)
 
+## Q: *Is there perfect Chrome or Firefox feature parity?*
+- No, see [Missing Ultralight Features](https://github.com/ultralight-ux/Ultralight/issues/178)
+
 # Licensing
 While muon itself is MIT licensed, [Ultralight](https://ultralig.ht/) is not. 
 ```
