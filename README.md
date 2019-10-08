@@ -84,6 +84,9 @@ func add(a float64, b float64) float64 {
 ## Q: *How do I get rid of the Console window on Windows?*
 - Add `-ldflags -H=windowsgui` to either your `go build` or `go run` to get rid of the window.
 
+## Q: *How do I setup Ultralight?*
+- See our [getting started guide](https://github.com/ImVexed/muon/blob/master/getting-started.md)
+
 # Licensing
 While muon itself is MIT licensed, [Ultralight](https://ultralig.ht/) is not. 
 ```
