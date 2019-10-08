@@ -78,7 +78,7 @@ func New(cfg *Config, handler http.Handler) *Window {
 
 	w.ov = UlCreateOverlay(w.wnd, w.cfg.Height, w.cfg.Width, w.cfg.X, w.cfg.Y)
 
-	UlWindowSetResizeCallback(w.wnd, resizeCallback(w.ov), unsafe.Pointer(&w.ov))
+	UlWindowSetResizeCallback(w.wnd, resizeCallback(w.ov), nil)
 
 	w.view = UlOverlayGetView(w.ov)
 

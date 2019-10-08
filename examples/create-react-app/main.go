@@ -12,10 +12,11 @@ func main() {
 	fileHandler := http.FileServer(webfiles.HTTP)
 
 	cfg := &muon.Config{
-		Title:  "Hello, World!",
-		Height: 500,
-		Width:  500,
-		Hint:   2 | 4,
+		Title:      "Hello, World!",
+		Height:     500,
+		Width:      500,
+		Tilted:     true,
+		Resizeable: true,
 	}
 
 	m := muon.New(cfg, fileHandler)
