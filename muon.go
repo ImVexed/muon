@@ -64,8 +64,9 @@ func New(cfg *Config, handler http.Handler) *Window {
 		hint |= 1
 	}
 
-	if !cfg.Titled {
+	if cfg.Titled {
 		hint |= 2
+	} else {
 		w.cfg.Title = ""
 	}
 
