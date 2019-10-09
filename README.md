@@ -49,7 +49,7 @@ func main() {
     Title:      "Hello, World!",
     Height:     500,
     Width:      500,
-    Tilted:     true,
+    Titled:     true,
     Resizeable: true,
   }
 
