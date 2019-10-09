@@ -9,7 +9,7 @@
 
 ----
 
-`Muon` is a lightweight alternative to Electron written in Golang in about ~300 LoC, using Ultralight instead of Chromium. [Ultralight](https://ultralig.ht/) is a cross-platform WebKit rewrite using the GPU to target embeded desktop applications that resulted in a fast, lightweight, and low-memory HTML UI solution that blends the power of Chromium with the small footprint of Native UI.
+`Muon` is a lightweight alternative to Electron written in Golang in about ~300 LoC, using Ultralight instead of Chromium. [Ultralight](https://ultralig.ht/) is a cross-platform WebKit rewrite using the GPU to target embedded desktop applications that resulted in a fast, lightweight, and low-memory HTML UI solution that blends the power of Chromium with the small footprint of Native UI.
 
 
 # Features
@@ -79,7 +79,7 @@ func add(a float64, b float64) float64 {
 - JS: `Object`  Go: `struct` via JSON
 
 ## Q: *I get `exit status 3221225781` when I try to run my program*
-- Your program likely can't find the Ultralight libraries. Ensure they're either installed on the system, or, in the same folder as your program. Currently, Muon uses the 1.1 Ultralight pre-release that hasn't yet propogated to their main site and can only be downloaded from the [Ultralight](https://github.com/ultralight-ux/Ultralight#getting-the-latest-sdk) github repo.
+- Your program likely can't find the Ultralight libraries. Ensure they're either installed on the system, or, in the same folder as your program. Currently, Muon uses the 1.1 Ultralight pre-release that hasn't yet propagated to their main site and can only be downloaded from the [Ultralight](https://github.com/ultralight-ux/Ultralight#getting-the-latest-sdk) github repo.
 
 ## Q: *How do I get rid of the Console window on Windows?*
 - Add `-ldflags -H=windowsgui` to either your `go build` or `go run` to get rid of the window.
