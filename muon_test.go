@@ -2,9 +2,27 @@ package muon
 
 import (
 	"net/http"
+	"os"
 	"reflect"
 	"testing"
 )
+
+var w *Window
+
+func TestMain(m *testing.M) {
+	cfg := &Config{
+		Height: 1,
+		Width:  1,
+	}
+
+	w = New(cfg, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {}))
+
+	go func() {
+		w.Start()
+	}()
+
+	os.Exit(m.Run())
+}
 
 type testObject struct {
 	S1 string
@@ -13,14 +31,8 @@ type testObject struct {
 }
 
 func TestComplexType(t *testing.T) {
-	cfg := &Config{
-		Height: 1,
-		Width:  1,
-	}
 
-	m := New(cfg, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {}))
-
-	m.Bind("test", func(to *testObject) *testObject {
+	w.Bind("complexTest", func(to *testObject) *testObject {
 		return &testObject{
 			S1: to.S1 + " World!",
 			F1: to.F1 + 1,
@@ -28,11 +40,7 @@ func TestComplexType(t *testing.T) {
 		}
 	})
 
-	go func() {
-		m.Start()
-	}()
-
-	res, err := m.Eval(`test({S1: "Hello,", F1: 9000, B1: false})`, reflect.TypeOf(&testObject{}))
+	res, err := w.Eval(`complexTest({S1: "Hello,", F1: 9000, B1: false})`, reflect.TypeOf(&testObject{}))
 
 	if err != nil {
 		t.Error(err)
@@ -53,15 +61,17 @@ func TestComplexType(t *testing.T) {
 	}
 }
 
-func TestArrayType(t *testing.T) {
-	cfg := &Config{
-		Height: 1,
-		Width:  1,
+func t2(to *testObject) *testObject {
+	return &testObject{
+		S1: to.S1 + " World!",
+		F1: to.F1 + 1,
+		B1: !to.B1,
 	}
+}
 
-	m := New(cfg, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {}))
+func TestArrayType(t *testing.T) {
 
-	m.Bind("test", func(strings []string) []float64 {
+	w.Bind("arrayTest", func(strings []string) []float64 {
 		if strings[0] != "Hello" {
 			t.Errorf("strings[0] was not Hello, got %s", strings[0])
 		}
@@ -71,11 +81,7 @@ func TestArrayType(t *testing.T) {
 		return []float64{1, 2, 3}
 	})
 
-	go func() {
-		m.Start()
-	}()
-
-	res, err := m.Eval(`test(["Hello","World!"])`, reflect.TypeOf([]float64{}))
+	res, err := w.Eval(`arrayTest(["Hello","World!"])`, reflect.TypeOf([]float64{}))
 
 	if err != nil {
 		t.Error(err)
@@ -97,14 +103,8 @@ func TestArrayType(t *testing.T) {
 }
 
 func TestEmptyType(t *testing.T) {
-	cfg := &Config{
-		Height: 1,
-		Width:  1,
-	}
 
-	m := New(cfg, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {}))
-
-	m.Bind("test", func(nullValue string, undefinedValue string) {
+	w.Bind("emptyTypeTest", func(nullValue string, undefinedValue string) {
 		if nullValue != "" {
 			t.Errorf("nullType was not empty!")
 		}
@@ -113,11 +113,24 @@ func TestEmptyType(t *testing.T) {
 		}
 	})
 
-	go func() {
-		m.Start()
-	}()
+	_, err := w.Eval(`emptyTypeTest(null, undefined)`, nil)
 
-	_, err := m.Eval(`test(null, undefined)`, nil)
+	if err != nil {
+		t.Error(err)
+	}
+}
+
+func TestMultipleFuncs(t *testing.T) {
+	w.Bind("multiple1Test", func(value1 string) {})
+	w.Bind("multiple2Test", func(value2 bool) {})
+
+	_, err := w.Eval(`multiple1Test("Hello, World1")`, nil)
+
+	if err != nil {
+		t.Error(err)
+	}
+
+	_, err = w.Eval(`multiple2Test(true)`, nil)
 
 	if err != nil {
 		t.Error(err)

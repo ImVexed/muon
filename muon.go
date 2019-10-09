@@ -2,7 +2,7 @@ package muon
 
 import (
 	"encoding/json"
-	"fmt"
+	"errors"
 	"net"
 	"net/http"
 	"reflect"
@@ -13,18 +13,18 @@ import (
 
 // Window represents a single Ultralight instance
 type Window struct {
-	wnd     ULWindow
-	ov      ULOverlay
-	view    ULView
-	app     ULApp
-	handler http.Handler
-	cfg     *Config
+	wnd       ULWindow
+	ov        ULOverlay
+	view      ULView
+	app       ULApp
+	handler   http.Handler
+	cfg       *Config
+	callbacks map[string]*ipf
 }
 
 type ipf struct {
-	Function    reflect.Value
-	ParamTypes  []reflect.Type
-	ReturnTypes []reflect.Type
+	Function   reflect.Value
+	ParamTypes []reflect.Type
 }
 
 // Config contains configurable controls for the Ultralight engine
@@ -44,8 +44,9 @@ type Config struct {
 // New creates a Ultralight Window
 func New(cfg *Config, handler http.Handler) *Window {
 	w := &Window{
-		cfg:     cfg,
-		handler: handler,
+		cfg:       cfg,
+		handler:   handler,
+		callbacks: make(map[string]*ipf),
 	}
 
 	ufg := UlCreateConfig()
@@ -104,6 +105,8 @@ func (w *Window) Start() error {
 	return nil
 }
 
+var registerCount int
+
 // Bind registers the given function to the given name in the Window's JS global object
 func (w *Window) Bind(name string, function interface{}) {
 	f := &ipf{
@@ -118,13 +121,13 @@ func (w *Window) Bind(name string, function interface{}) {
 		f.ParamTypes[i] = t.In(i)
 	}
 
-	f.ReturnTypes = make([]reflect.Type, t.NumOut())
-
-	for i := 0; i < t.NumOut(); i++ {
-		f.ReturnTypes[i] = t.Out(i)
+	if t.NumOut() > 1 {
+		panic("Too many return values!")
 	}
 
-	addFunctionToView(w.view, name, w.makeIPCCallback(f))
+	w.callbacks[name] = f
+
+	w.addFunction(name)
 }
 
 // Eval evaluates a given JavaScript string in the given Window view. `ret` is necessary for JSON serialization if an object is returned.
@@ -134,6 +137,7 @@ func (w *Window) Eval(js string, ret reflect.Type) (interface{}, error) {
 
 	ref := UlViewEvaluateScript(w.view, us)
 	ctx := UlViewGetJSContext(w.view)
+
 	val, err := fromJSValue(ctx, ref, ret)
 
 	if err != nil {
@@ -153,40 +157,41 @@ func (w *Window) Move(x int, y int) {
 	UlOverlayMoveTo(w.ov, int32(x), int32(y))
 }
 
-func (w *Window) makeIPCCallback(f *ipf) func(JSContextRef, JSObjectRef, JSObjectRef, uint, []JSValueRef, []JSValueRef) JSValueRef {
-	return func(
-		ctx JSContextRef,
-		function JSObjectRef,
-		thisObject JSObjectRef,
-		argumentCount uint,
-		arguments []JSValueRef,
-		exception []JSValueRef) JSValueRef {
+func (w *Window) ipcCallback(ctx JSContextRef, functin JSObjectRef, thisObject JSObjectRef, argumentCount uint, arguments []JSValueRef, exception []JSValueRef) JSValueRef {
+	jsName := JSStringCreateWithUTF8CString("name")
+	defer JSStringRelease(jsName)
 
-		params := make([]reflect.Value, argumentCount)
+	prop := JSObjectGetProperty(ctx, functin, jsName, nil)
+	jsProp := JSValueToStringCopy(ctx, prop, nil)
+	defer JSStringRelease(jsProp)
 
-		for i := uint(0); i < argumentCount; i++ {
-			val, err := fromJSValue(ctx, arguments[i], f.ParamTypes[i])
+	name := fromJSString(jsProp)
 
-			if err != nil {
-				panic(err)
-			}
+	f := w.callbacks[name]
 
-			params[i] = val
+	params := make([]reflect.Value, argumentCount)
+
+	for i := uint(0); i < argumentCount; i++ {
+		val, err := fromJSValue(ctx, arguments[i], f.ParamTypes[i])
+
+		if err != nil {
+			panic(err)
 		}
 
-		val := f.Function.Call(params)
-
-		if len(val) > 1 {
-			panic("Javascript does not support more than 1 return value!")
-		}
-
-		if len(val) == 0 {
-			return JSValueMakeNull(ctx)
-		}
-
-		return toJSValue(ctx, val[0])
-
+		params[i] = val
 	}
+
+	val := f.Function.Call(params)
+
+	if len(val) > 1 {
+		panic("Javascript does not support more than 1 return value!")
+	}
+
+	if len(val) == 0 {
+		return JSValueMakeNull(ctx)
+	}
+
+	return toJSValue(ctx, val[0])
 }
 
 func fromJSValue(ctx JSContextRef, value JSValueRef, rtype reflect.Type) (reflect.Value, error) {
@@ -205,6 +210,11 @@ func fromJSValue(ctx JSContextRef, value JSValueRef, rtype reflect.Type) (reflec
 
 		prop := JSObjectGetProperty(ctx, obj, l, nil)
 		length := int(JSValueToNumber(ctx, prop, nil))
+
+		if rtype.Kind() != reflect.Slice {
+			return reflect.Zero(rtype), errors.New("JS return is of type Array while Go type target is not")
+		}
+
 		values := reflect.MakeSlice(rtype, length, length)
 
 		for i := 0; i < length; i++ {
@@ -289,20 +299,24 @@ func toJSValue(ctx JSContextRef, value reflect.Value) JSValueRef {
 	}
 
 	if err != nil {
-		fmt.Println(err.Error())
 		return JSValueMakeNull(ctx)
 	}
+
 	return jsv
 }
 
-func addFunctionToView(view ULView, name string, callback JSObjectCallAsFunctionCallback) {
-	ctx := UlViewGetJSContext(view)
+func (w *Window) addFunction(name string) {
+	ctx := UlViewGetJSContext(w.view)
 	gobj := JSContextGetGlobalObject(ctx)
 
 	fn := JSStringCreateWithUTF8CString(name)
 	defer JSStringRelease(fn)
 
-	fob := JSObjectMakeFunctionWithCallback(ctx, fn, callback)
+	fname := JSStringCreateWithUTF8CString("name")
+	defer JSStringRelease(fname)
+
+	fob := JSObjectMakeFunctionWithCallback(ctx, fn, w.ipcCallback)
+	JSObjectSetProperty(ctx, fob, fname, JSValueMakeString(ctx, fname), KJSPropertyAttributeNone, []JSValueRef{})
 
 	val := *(*JSValueRef)(unsafe.Pointer(&fob))
 
@@ -322,7 +336,9 @@ func serveHandler(handler http.Handler) (string, error) {
 	}
 
 	go func() {
-		panic(http.Serve(ln, handler))
+		if err := http.Serve(ln, handler); err != nil {
+			panic(err)
+		}
 	}()
 
 	return "http://" + ln.Addr().String(), nil
