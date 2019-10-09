@@ -329,7 +329,9 @@ func (w *Window) addFunction(name string) {
 
 func resizeCallback(ov ULOverlay) func(userData unsafe.Pointer, width uint32, height uint32) {
 	return func(userData unsafe.Pointer, width uint32, height uint32) {
-		UlOverlayResize(ov, width, height)
+		if height > 0 {
+			UlOverlayResize(ov, width, height)
+		}
 	}
 }
 
