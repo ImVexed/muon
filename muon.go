@@ -37,7 +37,7 @@ type Config struct {
 
 	Resizeable  bool
 	Borderless  bool
-	Tilted      bool
+	Titled      bool
 	Maximizable bool
 }
 
@@ -64,8 +64,10 @@ func New(cfg *Config, handler http.Handler) *Window {
 		hint |= 1
 	}
 
-	if cfg.Tilted {
+	if cfg.Titled {
 		hint |= 2
+	} else {
+		w.cfg.Title = ""
 	}
 
 	if cfg.Maximizable {
