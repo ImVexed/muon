@@ -3,3 +3,4 @@ webfiles/
 .vscode/
 cra-go*
 *.dll
+cookies.dat
