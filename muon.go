@@ -74,12 +74,12 @@ func New(cfg *Config, handler http.Handler) *Window {
 		hint |= 8
 	}
 
-	w.wnd = UlCreateWindow(mm, w.cfg.Height, w.cfg.Width, false, hint)
+	w.wnd = UlCreateWindow(mm, w.cfg.Width, w.cfg.Height, false, hint)
 
 	UlWindowSetTitle(w.wnd, w.cfg.Title)
 	UlAppSetWindow(w.app, w.wnd)
 
-	w.ov = UlCreateOverlay(w.wnd, w.cfg.Height, w.cfg.Width, w.cfg.X, w.cfg.Y)
+	w.ov = UlCreateOverlay(w.wnd, w.cfg.Width, w.cfg.Height, w.cfg.X, w.cfg.Y)
 
 	UlWindowSetResizeCallback(w.wnd, resizeCallback(w.ov), nil)
 
