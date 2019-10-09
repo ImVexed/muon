@@ -167,7 +167,11 @@ func (w *Window) ipcCallback(ctx JSContextRef, functin JSObjectRef, thisObject J
 
 	name := fromJSString(jsProp)
 
-	f := w.callbacks[name]
+	f, ok := w.callbacks[name]
+
+	if !ok {
+		return JSValueMakeNull(ctx)
+	}
 
 	params := make([]reflect.Value, argumentCount)
 
