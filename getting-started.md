@@ -39,6 +39,9 @@ From there we're good to go as long as we have `gcc` in our path we can run
 go build
 ```
 
+**Note for Linux users**
+- Linux by default only looks for shared objects at a specific system path, if you would preffer to load the shared objects from a different directory, simple set the `LD_LIBRARY_PATH` environment variable to the new directory containing the libraries. (`.` being current directory)
+
 Now that we have a binary we're almost done. If you try to run it now, or, if you ran
 ```
 go run main.go
