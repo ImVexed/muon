@@ -23,6 +23,8 @@ yarn
 yarn build
 ```
 
+Ensure you have [fileb0x](https://github.com/UnnoTed/fileb0x) installed and in your `$PATH` variable by running `go get github.com/UnnoTed/fileb0x` 
+
 Now, back in the `create-react-app` directory, package the assets by running either:
 ```
 fileb0x b0x.yml
