@@ -90,9 +90,11 @@ func add(a float64, b float64) float64 {
 ## Q: *Is there perfect Chrome or Firefox feature parity?*
 - No, see [Missing Ultralight Features](https://github.com/ultralight-ux/Ultralight/issues/178)
 
-## Q: *My program can't find `libUltralightCore.so/dylib`, even though it's in the same directory*
-- Add `-ldflags "-r ."` to your `go build` to set `rpath` to the local directory for library resolution.
+## Q: *I get ` libWebCore.so: cannot open shared object file`*
+- If you're attempting to load the libraries out of the same directory as your program add `-ldflags "-r ."` to your `go build` to set `rpath` to the local directory for library resolution.
 
+## Q: *I get `symbol not found: ulCreateSettings`*
+- This likely means you're not using the 1.1 Ultralight pre-release which can be downloaded only from their [GitHub Repo](https://github.com/ultralight-ux/Ultralight#getting-the-latest-sdk) for now
 # Licensing
 While muon itself is MIT licensed, [Ultralight](https://ultralig.ht/) is not. 
 ```
