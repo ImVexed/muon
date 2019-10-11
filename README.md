@@ -78,17 +78,17 @@ func add(a float64, b float64) float64 {
 - JS: `String`  Go: `string`
 - JS: `Object`  Go: `struct` via JSON
 
-## Q: *I get `exit status 3221225781` when I try to run my program*
-- Your program likely can't find the Ultralight libraries. Ensure they're either installed on the system, or, in the same folder as your program. Currently, Muon uses the 1.1 Ultralight pre-release that hasn't yet propagated to their main site and can only be downloaded from the [Ultralight](https://github.com/ultralight-ux/Ultralight#getting-the-latest-sdk) github repo.
-
-## Q: *How do I get rid of the Console window on Windows?*
-- Add `-ldflags -H=windowsgui` to either your `go build` or `go run` to get rid of the window.
-
 ## Q: *How do I setup Ultralight?*
 - See our [getting started guide](https://github.com/ImVexed/muon/blob/master/getting-started.md)
 
 ## Q: *Is there perfect Chrome or Firefox feature parity?*
 - No, see [Missing Ultralight Features](https://github.com/ultralight-ux/Ultralight/issues/178)
+
+## Q: *How do I get rid of the Console on Windows?*
+- Add `-ldflags -H=windowsgui` to either your `go build` or `go run` to get rid of the window.
+
+## Q: *I get `exit status 3221225781`*
+- Your program likely can't find the Ultralight libraries. Ensure they're either installed on the system, or, in the same folder as your program. Currently, Muon uses the 1.1 Ultralight pre-release that hasn't yet propagated to their main site and can only be downloaded from the [Ultralight](https://github.com/ultralight-ux/Ultralight#getting-the-latest-sdk) github repo.
 
 ## Q: *I get ` libWebCore.so: cannot open shared object file`*
 - If you're attempting to load the libraries out of the same directory as your program add `-ldflags "-r ."` to your `go build` to set `rpath` to the local directory for library resolution.
