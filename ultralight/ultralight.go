@@ -7,7 +7,11 @@ package ultralight
 
 /*
 #cgo CFLAGS: -I../include
-#cgo LDFLAGS: -L${SRCDIR}/libs -lUltralightCore -lWebCore -lUltralight -lAppCore
+#cgo windows,386 LDFLAGS: -L${SRCDIR}/libs/windows/x32
+#cgo windows,amd64 LDFLAGS: -L${SRCDIR}/libs/windows/x64 
+#cgo darwin,amd64 LDFLAGS: -L${SRCDIR}/libs/darwin/x64 
+#cgo linux,amd64 LDFLAGS: -L${SRCDIR}/libs/linux/x64 
+#cgo LDFLAGS: -lUltralightCore -lWebCore -lUltralight -lAppCore
 #include "AppCore/CAPI.h"
 #include <stdlib.h>
 #include "cgo_helpers.h"
