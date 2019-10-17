@@ -95,6 +95,9 @@ func add(a float64, b float64) float64 {
 
 ## Q: *I get `symbol not found: ulCreateSettings`*
 - This likely means you're not using the 1.1 Ultralight pre-release which can be downloaded only from their [GitHub Repo](https://github.com/ultralight-ux/Ultralight#getting-the-latest-sdk) for now
+## Q: *How do I compile for x86?*
+- Currently, Ultralight only supports Windows for x86. Ensure you have a 32-bit `gcc` in your path, and ensure you have `CGO_ENABLED=1` and `GOARCH=386` environment variables set.
+
 # Licensing
 While muon itself is MIT licensed, [Ultralight](https://ultralig.ht/) is not. 
 ```
