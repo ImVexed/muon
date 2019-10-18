@@ -69,4 +69,4 @@ jobs:
         wget -O ultralight.7z https://ultralight-sdk.sfo2.cdn.digitaloceanspaces.com/ultralight-sdk-latest-mac-x64.7z
         7z e ultralight.7z *.dylib -r
     - name: Test
-      run: go -ldflags "-r ." test
+      run: go test -ldflags "-r ."
