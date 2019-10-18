@@ -37,7 +37,6 @@ jobs:
         GOARCH: 386
         CGO_ENABLED: 1
       run: |
-        gcc --version
         go test
   Linux_x64:
     runs-on: ubuntu-latest
@@ -53,6 +52,8 @@ jobs:
         wget -O ultralight.7z https://ultralight-sdk.sfo2.cdn.digitaloceanspaces.com/ultralight-sdk-latest-linux-x64.7z
         7z e ultralight.7z *.so -r
     - name: Test
+      env:
+        LD_LIBRARY_PATH: .
       run: go test -ldflags "-r ."
   Mac_x64:
     runs-on: macOS-latest
