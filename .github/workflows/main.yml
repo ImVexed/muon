@@ -53,7 +53,7 @@ jobs:
         wget -O ultralight.7z https://ultralight-sdk.sfo2.cdn.digitaloceanspaces.com/ultralight-sdk-latest-linux-x64.7z
         7z e ultralight.7z *.so -r
     - name: Test
-      run: go test
+      run: go test -ldflags "-r ."
   Mac_x64:
     runs-on: macOS-latest
     steps:
