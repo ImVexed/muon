@@ -1,0 +1,60 @@
+on: [push, pull_request]
+name: Test
+jobs:
+  Windows x64:
+    runs-on: windows-latest
+    steps:
+    - name: Install Go
+      uses: actions/setup-go@v1
+    - name: Checkout code
+      uses: actions/checkout@v1
+    - name: Install Deps
+      shell: pwsh
+      run: |
+        Invoke-WebRequest -OutFile ultralight.7z https://ultralight-sdk.sfo2.cdn.digitaloceanspaces.com/ultralight-sdk-latest-win-x64.7z
+        7z e ultralight.7z .\bin\*.dll
+    - name: Test
+      run: go test
+  Windows x32:
+    runs-on: windows-latest
+    steps:
+    - name: Install Go
+      uses: actions/setup-go@v1
+    - name: Checkout code
+      uses: actions/checkout@v1
+    - name: Install Deps
+      shell: pwsh
+      run: |
+        Invoke-WebRequest -OutFile ultralight.7z https://ultralight-sdk.sfo2.cdn.digitaloceanspaces.com/ultralight-sdk-latest-win-x86.7z
+        7z e ultralight.7z .\bin\*.dll
+    - name: Test
+      env:
+        GOARCH: 386
+        CGO_ENABLED: 1
+      run: go test
+  Linux x64:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Install Go
+      uses: actions/setup-go@v1
+    - name: Checkout code
+      uses: actions/checkout@v1
+    - name: Install Deps
+      run: |
+        wget -O ultralight.7z https://ultralight-sdk.sfo2.cdn.digitaloceanspaces.com/ultralight-sdk-latest-linux-x64.7z
+        7z e ultralight.7z .\bin\*.dll
+    - name: Test
+      run: go test
+  Mac x64:
+    runs-on: macOS-latest
+    steps:
+    - name: Install Go
+      uses: actions/setup-go@v1
+    - name: Checkout code
+      uses: actions/checkout@v1
+    - name: Install Deps
+      run: |
+        wget -O ultralight.7z https://ultralight-sdk.sfo2.cdn.digitaloceanspaces.com/ultralight-sdk-latest-mac-x64.7z
+        7z e ultralight.7z .\bin\*.dll
+    - name: Test
+      run: go test
