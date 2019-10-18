@@ -51,10 +51,10 @@ jobs:
       run: |
         wget -O ultralight.7z https://ultralight-sdk.sfo2.cdn.digitaloceanspaces.com/ultralight-sdk-latest-linux-x64.7z
         7z e ultralight.7z *.so -r
-        sudo apt update && sudo apt install -y xorg openbox
     - name: Test
       env:
         LD_LIBRARY_PATH: .
+        DISPLAY: :0
       run: go test -ldflags "-r ."
   Mac_x64:
     runs-on: macOS-latest
