@@ -37,6 +37,7 @@ jobs:
         GOARCH: 386
         CGO_ENABLED: 1
       run: |
+        echo %PATH%
         go env
         go test
   Linux_x64:
