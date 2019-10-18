@@ -29,6 +29,7 @@ jobs:
     - name: Install Deps
       shell: pwsh
       run: |
+        choco install mingw --x86 --force
         Invoke-WebRequest -OutFile ultralight.7z https://ultralight-sdk.sfo2.cdn.digitaloceanspaces.com/ultralight-sdk-latest-win-x86.7z
         7z e ultralight.7z .\bin\*.dll
     - name: Test
@@ -48,7 +49,7 @@ jobs:
     - name: Install Deps
       run: |
         wget -O ultralight.7z https://ultralight-sdk.sfo2.cdn.digitaloceanspaces.com/ultralight-sdk-latest-linux-x64.7z
-        7z e ultralight.7z .\bin\*.dll
+        7z e ultralight.7z .\bin\*.so
     - name: Test
       run: go test
   Mac_x64:
@@ -63,6 +64,6 @@ jobs:
     - name: Install Deps
       run: |
         wget -O ultralight.7z https://ultralight-sdk.sfo2.cdn.digitaloceanspaces.com/ultralight-sdk-latest-mac-x64.7z
-        7z e ultralight.7z .\bin\*.dll
+        7z e ultralight.7z .\bin\*.dylib
     - name: Test
       run: go test
