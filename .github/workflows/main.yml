@@ -36,7 +36,9 @@ jobs:
       env:
         GOARCH: 386
         CGO_ENABLED: 1
-      run: go test
+      run: |
+        go env
+        go test
   Linux_x64:
     runs-on: ubuntu-latest
     steps:
@@ -63,6 +65,7 @@ jobs:
       uses: actions/checkout@v1
     - name: Install Deps
       run: |
+        brew install p7zip
         wget -O ultralight.7z https://ultralight-sdk.sfo2.cdn.digitaloceanspaces.com/ultralight-sdk-latest-mac-x64.7z
         7z e ultralight.7z .\bin\*.dylib
     - name: Test
