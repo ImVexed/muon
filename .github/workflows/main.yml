@@ -29,7 +29,7 @@ jobs:
     - name: Install Deps
       shell: pwsh
       run: |
-        Invoke-WebRequest -OutFile gcc.zip http://sourceforge.net/projects/tdm-gcc/files/TDM-GCC%205%20series/5.1.0-tdm-1%20SJLJ/gcc-5.1.0-tdm-1-core.zip/download
+        Invoke-WebRequest -OutFile gcc.zip https://managedway.dl.sourceforge.net/project/tdm-gcc/TDM-GCC%205%20series/5.1.0-tdm-1%20SJLJ/gcc-5.1.0-tdm-1-core.zip
         Expand-Archive -Path gcc.zip -DestinationPath C:/tdmgcc
         Invoke-WebRequest -OutFile ultralight.7z https://ultralight-sdk.sfo2.cdn.digitaloceanspaces.com/ultralight-sdk-latest-win-x86.7z
         7z e ultralight.7z *.dll -r
