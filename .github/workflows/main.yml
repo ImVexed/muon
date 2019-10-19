@@ -30,7 +30,10 @@ jobs:
       shell: pwsh
       run: |
         Invoke-WebRequest -OutFile gcc.zip https://managedway.dl.sourceforge.net/project/tdm-gcc/TDM-GCC%205%20series/5.1.0-tdm-1%20SJLJ/gcc-5.1.0-tdm-1-core.zip
+        Invoke-WebRequest -OutFile mingw.zip https://versaweb.dl.sourceforge.net/project/mingw/MinGW/Base/mingwrt/mingwrt-3.20/mingwrt-3.20-2-mingw32-dev.tar.lzma
         Expand-Archive -Path gcc.zip -DestinationPath C:/tdmgcc
+        7z e mingw.zip
+        7z x mingwrt-3.20-2-mingw32-dev.tar -o C:/tdmgcc
         Invoke-WebRequest -OutFile ultralight.7z https://ultralight-sdk.sfo2.cdn.digitaloceanspaces.com/ultralight-sdk-latest-win-x86.7z
         7z e ultralight.7z *.dll -r
     - name: Test
