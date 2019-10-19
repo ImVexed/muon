@@ -29,16 +29,17 @@ jobs:
     - name: Install Deps
       shell: pwsh
       run: |
-        choco uninstall mingw
-        choco install mingw --x86
+        Invoke-WebRequest -OutFile gcc.zip http://sourceforge.net/projects/tdm-gcc/files/TDM-GCC%205%20series/5.1.0-tdm-1%20SJLJ/gcc-5.1.0-tdm-1-core.zip/download
+        Expand-Archive -Path gcc.zip -DestinationPath C:/tdmgcc
         Invoke-WebRequest -OutFile ultralight.7z https://ultralight-sdk.sfo2.cdn.digitaloceanspaces.com/ultralight-sdk-latest-win-x86.7z
         7z e ultralight.7z *.dll -r
     - name: Test
       env:
         GOARCH: 386
         CGO_ENABLED: 1
+        CC: C:/tdmgcc/bin/gcc.exe
       run: |
-        gcc --version
+        go env
         go test
   Linux_x64:
     runs-on: ubuntu-latest
