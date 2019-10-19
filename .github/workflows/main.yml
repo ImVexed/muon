@@ -29,7 +29,8 @@ jobs:
     - name: Install Deps
       shell: pwsh
       run: |
-        choco install mingw --x86 --force
+        choco uninstall mingw
+        choco install mingw --x86
         Invoke-WebRequest -OutFile ultralight.7z https://ultralight-sdk.sfo2.cdn.digitaloceanspaces.com/ultralight-sdk-latest-win-x86.7z
         7z e ultralight.7z *.dll -r
     - name: Test
