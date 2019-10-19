@@ -36,10 +36,8 @@ jobs:
       env:
         GOARCH: 386
         CGO_ENABLED: 1
-      shell: pwsh
       run: |
-        refreshenv
-        echo %PATH%
+        gcc --version
         go test
   Linux_x64:
     runs-on: ubuntu-latest
