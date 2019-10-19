@@ -1,0 +1,77 @@
+on: [push, pull_request]
+name: Test
+jobs:
+  Windows_x64:
+    runs-on: windows-latest
+    steps:
+    - name: Install Go
+      uses: actions/setup-go@v1
+      with:
+        go-version: 1.13.x
+    - name: Checkout code
+      uses: actions/checkout@v1
+    - name: Install Deps
+      shell: pwsh
+      run: |
+        Invoke-WebRequest -OutFile ultralight.7z https://ultralight-sdk.sfo2.cdn.digitaloceanspaces.com/ultralight-sdk-latest-win-x64.7z
+        7z e ultralight.7z *.dll -r
+    - name: Test
+      run: go test
+  # One day I'll get this working
+  # Windows_x32:
+  #   runs-on: windows-latest
+  #   steps:
+  #   - name: Install Go
+  #     uses: actions/setup-go@v1
+  #     with:
+  #       go-version: 1.13.x
+  #   - name: Checkout code
+  #     uses: actions/checkout@v1
+  #   - name: Install Deps
+  #     shell: pwsh
+  #     run: |
+  #       choco install mingw --x86 --force
+  #       Invoke-WebRequest -OutFile ultralight.7z https://ultralight-sdk.sfo2.cdn.digitaloceanspaces.com/ultralight-sdk-latest-win-x86.7z
+  #       7z e ultralight.7z *.dll -r
+  #   - name: Test
+  #     env:
+  #       GOARCH: 386
+  #       CGO_ENABLED: 1
+  #     run: |
+  #       go test
+  Linux_x64:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Install Go
+      uses: actions/setup-go@v1
+      with:
+        go-version: 1.13.x
+    - name: Checkout code
+      uses: actions/checkout@v1
+    - name: Install Deps
+      run: |
+        wget -O ultralight.7z https://ultralight-sdk.sfo2.cdn.digitaloceanspaces.com/ultralight-sdk-latest-linux-x64.7z
+        7z e ultralight.7z *.so -r
+        sudo apt update && sudo apt install -y xorg openbox
+        sudo nohup Xorg :0 &
+    - name: Test
+      env:
+        LD_LIBRARY_PATH: .
+        DISPLAY: :0
+      run: go test -ldflags "-r ."
+  Mac_x64:
+    runs-on: macOS-latest
+    steps:
+    - name: Install Go
+      uses: actions/setup-go@v1
+      with:
+        go-version: 1.13.x
+    - name: Checkout code
+      uses: actions/checkout@v1
+    - name: Install Deps
+      run: |
+        brew install p7zip
+        wget -O ultralight.7z https://ultralight-sdk.sfo2.cdn.digitaloceanspaces.com/ultralight-sdk-latest-mac-x64.7z
+        7z e ultralight.7z *.dylib -r
+    - name: Test
+      run: go test -ldflags "-r ."
