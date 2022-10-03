@@ -9,7 +9,7 @@
 ///
 /// Website: <http://ultralig.ht>
 ///
-/// Copyright (C) 2019 Ultralight, Inc. All rights reserved.
+/// Copyright (C) 2020 Ultralight, Inc. All rights reserved.
 ///
 #ifndef APPCORE_CAPI_H
 #define APPCORE_CAPI_H
@@ -57,14 +57,37 @@ ACExport ULSettings ulCreateSettings();
 ACExport void ulDestroySettings(ULSettings settings);
 
 ///
+/// Set the name of the developer of this app.
+///
+/// This is used to generate a unique path to store local application data
+/// on the user's machine.
+///
+/// Default is "MyCompany"
+///
+ACExport void ulSettingsSetDeveloperName(ULSettings settings, ULString name);
+
+///
+/// Set the name of this app.
+///
+/// This is used to generate a unique path to store local application data
+/// on the user's machine.
+///
+/// Default is "MyApp"
+///
+ACExport void ulSettingsSetAppName(ULSettings settings, ULString name);
+
+///
 /// Set the root file path for our file system, you should set this to the
 /// relative path where all of your app data is.
 ///
 /// This will be used to resolve all file URLs, eg file:///page.html
 ///
-/// @note  By default, on macOS we use the app bundle's @resource_path,
-///        on all other platforms we use the "./assets/" directory relative
-///        to the executable's directory.
+/// @note  The default path is "./assets/"
+///        
+///        This relative path is resolved using the following logic:
+///         - Windows: relative to the executable path
+///         - Linux:   relative to the executable path
+///         - macOS:   relative to YourApp.app/Contents/Resources/
 ///
 ACExport void ulSettingsSetFileSystemPath(ULSettings settings, ULString path);
 
@@ -78,6 +101,13 @@ ACExport void ulSettingsSetFileSystemPath(ULSettings settings, ULString path);
 ACExport void ulSettingsSetLoadShadersFromFileSystem(ULSettings settings,
                                                      bool enabled);
 
+///
+/// We try to use the GPU renderer when a compatible GPU is detected.
+///
+/// Set this to true to force the engine to always use the CPU renderer.
+///
+ACExport void ulSettingsSetForceCPURenderer(ULSettings settings,
+                                            bool force_cpu);
 ///
 /// Create the App singleton.
 ///
@@ -160,12 +190,12 @@ ACExport void ulAppQuit(ULApp app);
 ACExport double ulMonitorGetScale(ULMonitor monitor);
 
 ///
-/// Get the width of the monitor (in device coordinates).
+/// Get the width of the monitor (in pixels).
 ///
 ACExport unsigned int ulMonitorGetWidth(ULMonitor monitor);
 
 ///
-/// Get the height of the monitor (in device coordinates).
+/// Get the height of the monitor (in pixels).
 ///
 ACExport unsigned int ulMonitorGetHeight(ULMonitor monitor);
 
@@ -206,19 +236,19 @@ typedef void
 
 ///
 /// Set a callback to be notified when a window resizes
-/// (parameters are passed back in device coordinates).
+/// (parameters are passed back in pixels).
 ///
 ACExport void ulWindowSetResizeCallback(ULWindow window,
                                         ULResizeCallback callback,
                                         void* user_data);
 
 ///
-/// Get window width (in device coordinates).
+/// Get window width (in pixels).
 ///
 ACExport unsigned int ulWindowGetWidth(ULWindow window);
 
 ///
-/// Get window height (in device coordinates).
+/// Get window height (in pixels).
 ///
 ACExport unsigned int ulWindowGetHeight(ULWindow window);
 
@@ -258,6 +288,15 @@ ACExport int ulWindowDeviceToPixel(ULWindow window, int val);
 ACExport int ulWindowPixelsToDevice(ULWindow window, int val);
 
 ///
+/// Get the underlying native window handle.
+///
+/// @note This is:  - HWND on Windows
+///                 - NSWindow* on macOS
+///                 - GLFWwindow* on Linux
+///
+ACExport void* ulWindowGetNativeHandle(ULWindow window);
+
+///
 /// Create a new Overlay.
 ///
 /// @param  window  The window to create the Overlay in. (we currently only
@@ -268,16 +307,36 @@ ACExport int ulWindowPixelsToDevice(ULWindow window, int val);
 /// @param  height  The height in device coordinates.
 ///
 /// @param  x       The x-position (offset from the left of the Window), in
-///                 device coordinates.
+///                 pixels.
 ///
 /// @param  y       The y-position (offset from the top of the Window), in
-///                 device coordinates.
+///                 pixels.
 ///
 /// @note  Each Overlay is essentially a View and an on-screen quad. You should
 ///        create the Overlay then load content into the underlying View.
 ///
 ACExport ULOverlay ulCreateOverlay(ULWindow window, unsigned int width,
                                    unsigned int height, int x, int y);
+
+///
+/// Create a new Overlay, wrapping an existing View.
+///
+/// @param  window  The window to create the Overlay in. (we currently only
+///                 support one window per application)
+///
+/// @param  view    The View to wrap (will use its width and height).
+///
+/// @param  x       The x-position (offset from the left of the Window), in
+///                 pixels.
+///
+/// @param  y       The y-position (offset from the top of the Window), in
+///                 pixels.
+///
+/// @note  Each Overlay is essentially a View and an on-screen quad. You should
+///        create the Overlay then load content into the underlying View.
+///
+ACExport ULOverlay ulCreateOverlayWithView(ULWindow window, ULView view, 
+                                           int x, int y);
 
 ///
 /// Destroy an overlay.
@@ -290,35 +349,33 @@ ACExport void ulDestroyOverlay(ULOverlay overlay);
 ACExport ULView ulOverlayGetView(ULOverlay overlay);
 
 ///
-/// Get the width (in device coordinates).
+/// Get the width (in pixels).
 ///
 ACExport unsigned int ulOverlayGetWidth(ULOverlay overlay);
 
 ///
-/// Get the height (in device coordinates).
+/// Get the height (in pixels).
 ///
 ACExport unsigned int ulOverlayGetHeight(ULOverlay overlay);
 
 ///
-/// Get the x-position (offset from the left of the Window), in device
-/// coordinates.
+/// Get the x-position (offset from the left of the Window), in pixels.
 ///
 ACExport int ulOverlayGetX(ULOverlay overlay);
 
 ///
-/// Get the y-position (offset from the top of the Window), in device
-/// coordinates.
+/// Get the y-position (offset from the top of the Window), in pixels.
 ///
 ACExport int ulOverlayGetY(ULOverlay overlay);
 
 ///
-/// Move the overlay to a new position (in device coordinates).
+/// Move the overlay to a new position (in pixels).
 ///
 ACExport void ulOverlayMoveTo(ULOverlay overlay, int x, int y);
 
 ///
 /// Resize the overlay (and underlying View), dimensions should be
-/// specified in device coordinates.
+/// specified in pixels.
 ///
 ACExport void ulOverlayResize(ULOverlay overlay, unsigned int width,
                               unsigned int height);
@@ -352,6 +409,37 @@ ACExport void ulOverlayFocus(ULOverlay overlay);
 /// Remove keyboard focus.
 ///
 ACExport void ulOverlayUnfocus(ULOverlay overlay);
+
+/******************************************************************************
+ * Platform
+ *****************************************************************************/
+
+///
+/// This is only needed if you are not calling ulCreateApp().
+///
+/// Initializes the platform font loader and sets it as the current FontLoader.
+///
+ACExport void ulEnablePlatformFontLoader();
+
+///
+/// This is only needed if you are not calling ulCreateApp().
+///
+/// Initializes the platform file system (needed for loading file:/// URLs) and
+/// sets it as the current FileSystem.
+///
+/// You can specify a base directory path to resolve relative paths against.
+///
+ACExport void ulEnablePlatformFileSystem(ULString base_dir);
+
+///
+/// This is only needed if you are not calling ulCreateApp().
+///
+/// Initializes the default logger (writes the log to a file).
+///
+/// You should specify a writable log path to write the log to 
+/// for example "./ultralight.log".
+///
+ACExport void ulEnableDefaultLogger(ULString log_path);
 
 #ifdef __cplusplus
 }

@@ -11,8 +11,8 @@ var w *Window
 
 func TestMain(m *testing.M) {
 	cfg := &Config{
-		Height: 1,
-		Width:  1,
+		Height: 100,
+		Width:  100,
 	}
 
 	w = New(cfg, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {}))
